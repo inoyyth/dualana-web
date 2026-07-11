@@ -5,7 +5,7 @@ use App\Http\Controllers\ExternalPostController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('homepage');
 });
 
 Route::get('/architecture-demo', [ArchitectureDemoController::class, 'index'])->name('architecture-demo');
