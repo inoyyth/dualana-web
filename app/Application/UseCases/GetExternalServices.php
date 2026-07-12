@@ -2,17 +2,17 @@
 
 namespace App\Application\UseCases;
 
-use App\Repositories\Contracts\ExternalPostRepositoryInterface;
+use App\Domain\Entities\ExternalPage;
+use App\Repositories\Contracts\ExternalServiceRepositoryInterface;
 
-class GetExternalPosts
+class GetExternalServices
 {
     public function __construct(
-        private readonly ExternalPostRepositoryInterface $repository
-    ) {
-    }
+        private readonly ExternalServiceRepositoryInterface $repository
+    ) {}
 
     /**
-     * Execute use case to get posts.
+     * Execute use case to get services.
      *
      * @param array $query
      * @return array
@@ -20,7 +20,7 @@ class GetExternalPosts
      */
     public function execute(array $query = []): array
     {
-        $data = $this->repository->getPage($query);
+        $data = $this->repository->getServices($query);
         $res = [];
         foreach ($data as $item) {
             $res[] = new ExternalPage($item);
@@ -29,14 +29,14 @@ class GetExternalPosts
     }
 
     /**
-     * Get detail post by ID.
+     * Get detail service by ID.
      *
      * @param int $id
      * @return ExternalPageInterface
      */
     public function executeById(int $id): ExternalPageInterface
     {
-        $data = $this->repository->getPageById($id);
+        $data = $this->repository->getServiceById($id);
         return new ExternalPage($data);
     }
 }

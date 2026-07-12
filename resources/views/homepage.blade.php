@@ -4,14 +4,22 @@
 
 @section('content')
 
+  
+    @if($error)
+    <section class="section-wrap" style="color: red; text-align: center; margin-top: 100px; padding: 10px; border: 1px solid red;">
+      <pre>{{ print_r($error) }}</pre>
+    </section>
+    @endif
+
   <section class="hero section-wrap">
       <div class="hero-copy reveal">
         <img class="hero-logo" src="{{asset('assets/images/aset-logo.png')}}" alt="Dualana">
         <div class="pill-row" aria-label="Capabilities">
-          <span>Brand Activation</span>
-          <span>Brand Exhibition</span>
-          <span>Event Management</span>
-          <span>Booth Production</span>
+          @if ($banner && !empty($banner['data'][0]['acf']['banner_tag']))
+            @foreach (explode(',', $banner['data'][0]['acf']['banner_tag']) as $item)   
+              <span>{{ $item }}</span>
+            @endforeach
+          @endif
         </div>
         <div class="hero-actions">
           <a class="button primary" href="#projects">Our Credential <span aria-hidden="true">+</span></a>
@@ -19,7 +27,7 @@
         </div>
       </div>
       <div class="hero-art reveal" aria-hidden="true">
-        <img src="{{ asset('assets/images/aset-hero.png') }}" alt="">
+        <img src="{{ $banner['acf']['banner_image']['url'] ?? asset('assets/images/aset-hero.png') }}" alt="">
       </div>
   </section>
 
@@ -27,32 +35,30 @@
     <p>Trusted by industry leaders</p>
     <div class="partner-carousel" aria-label="Industry leader logos">
       <div class="partner-row">
-        <span>allo<span>fresh</span></span>
-        <span>amartha</span>
-        <span>Telkomsel</span>
-        <span>tokopedia</span>
-        <span>Indofood</span>
-        <span aria-hidden="true">allo<span>fresh</span></span>
-        <span aria-hidden="true">amartha</span>
-        <span aria-hidden="true">Telkomsel</span>
-        <span aria-hidden="true">tokopedia</span>
-        <span aria-hidden="true">Indofood</span>
+        @if($clients && isset($clients['data']))
+          @foreach($clients['data'] as $client)
+            <span>{{ $client['title'] }}</span>
+          @endforeach
+        @endif
       </div>
     </div>
   </section>
 
   <section class="about section-wrap" id="about">
     <div class="about-copy reveal">
-      <p>
+      @if($profile && !empty($profile['data'][0]['content']))
+        {!! $profile['data'][0]['content'] !!}
+      @endif
+      <!-- <p>
         Since its establishment in 2018, Dualana Indonesia has become a trusted event organizer dedicated to bringing ideas and visions to life. With over 7 years of experience and hundreds of satisfied clients, we are committed to delivering exceptional services from planning and coordination to flawless execution.
       </p>
       <p>
         Whether it's sales activation, corporate events, seminars, exhibitions, merchandising, we provide creative and innovative solutions to ensure every moment becomes an unforgettable experience and clients goals is our priority.
-      </p>
+      </p> -->
     </div>
     <div class="about-media reveal">
-        <img class="photo-main" src="{{ asset('assets/images/about-workshop.png') }}" alt="Dualana planning session">
-        <img class="photo-tall" src="{{ asset('assets/images/about-credential.png') }}" alt="Dualana credential material">
+        <img class="photo-main" src="{{ $profile['data'][0]['acf']['about_image_1']['url'] ?? asset('assets/images/img-about1.png')}}" alt="Dualana planning session">
+        <img class="photo-tall" src="{{ $profile['data'][0]['acf']['about_image_2']['url'] ?? asset('assets/images/img-about2.png')}}" alt="Dualana credential material">
     </div>
   </section>
 
@@ -64,37 +70,19 @@
     </div>
 
     <div class="grid">
-      <div class="card" tabindex="0" data-service="0">
-        <img src="{{ asset('assets/images/img-service1.png') }}" alt="Brand exhibition merchandise">
-        <div class="card-overlay">
-          <h3 class="card-title">Brand Activation</h3>
-          <button class="card-btn" type="button" data-open="0">See the detail</button>
+      @if ($services && !empty($services['data']))
+        @foreach ($services['data'] as $index => $service)
+        @if($service['featured_media'][0]['source_url'])
+        <div class="card" tabindex="0" data-service="{{ $index }}">
+          <img src="{{ $service['featured_media'][0]['source_url'] }}" alt="{{ $service['title'] }}">
+          <div class="card-overlay">
+            <h3 class="card-title">{{ $service['title'] }}</h3>
+            <button class="card-btn" type="button" data-open="{{ $index }}">See the detail</button>
+          </div>
         </div>
-      </div>
-
-      <div class="card" tabindex="0" data-service="1">
-        <img src="{{ asset('assets/images/img-service2.png') }}" alt="Event management planning material">
-        <div class="card-overlay">
-          <h3 class="card-title">Brand Exhibition</h3>
-          <button class="card-btn" type="button" data-open="1">See the detail</button>
-        </div>
-      </div>
-
-      <div class="card" tabindex="0" data-service="2">
-        <img src="{{ asset('assets/images/img-service3.png') }}" alt="Event production">
-        <div class="card-overlay">
-          <h3 class="card-title">Event Management</h3>
-          <button class="card-btn" type="button" data-open="2">See the detail</button>
-        </div>
-      </div>
-
-      <div class="card" tabindex="0" data-service="3">
-        <img src="{{ asset('assets/images/img-service4.png') }}" alt="Brand activation">
-        <div class="card-overlay">
-          <h3 class="card-title">Booth Production</h3>
-          <button class="card-btn" type="button" data-open="3">See the detail</button>
-        </div>
-      </div>
+        @endif
+        @endforeach
+      @endif
     </div>
 
   </section>

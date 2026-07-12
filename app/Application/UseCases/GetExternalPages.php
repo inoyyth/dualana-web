@@ -2,17 +2,17 @@
 
 namespace App\Application\UseCases;
 
-use App\Repositories\Contracts\ExternalPostRepositoryInterface;
+use App\Domain\Entities\ExternalPage;
+use App\Repositories\Contracts\ExternalPageRepositoryInterface;
 
-class GetExternalPosts
+class GetExternalPages
 {
     public function __construct(
-        private readonly ExternalPostRepositoryInterface $repository
-    ) {
-    }
+        private readonly ExternalPageRepositoryInterface $repository
+    ) {}
 
     /**
-     * Execute use case to get posts.
+     * Execute use case to get pages.
      *
      * @param array $query
      * @return array
@@ -29,7 +29,7 @@ class GetExternalPosts
     }
 
     /**
-     * Get detail post by ID.
+     * Get detail page by ID.
      *
      * @param int $id
      * @return ExternalPageInterface
