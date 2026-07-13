@@ -1,5 +1,19 @@
 @extends('layouts.app')
 
+@php
+  $jsServices = [];
+  if (isset($services) && !empty($services['data'])) {
+      foreach ($services['data'] as $index => $service) {
+          $jsServices[$index] = [
+              'index' => sprintf("%02d", $index + 1),
+              'image' => $service['featured_media'][0]['source_url'],
+              'title' => $service['title'],
+              'body' => html_entity_decode(strip_tags($service['content']), ENT_QUOTES, 'UTF-8'),
+          ];
+      }
+  }
+@endphp
+
 @section('title', $title ?? 'Layered Architecture')
 
 @section('content')
@@ -46,15 +60,9 @@
 
   <section class="about section-wrap" id="about">
     <div class="about-copy reveal">
-      @if($profile && !empty($profile['data'][0]['content']))
+      @if($profile)
         {!! $profile['data'][0]['content'] !!}
       @endif
-      <!-- <p>
-        Since its establishment in 2018, Dualana Indonesia has become a trusted event organizer dedicated to bringing ideas and visions to life. With over 7 years of experience and hundreds of satisfied clients, we are committed to delivering exceptional services from planning and coordination to flawless execution.
-      </p>
-      <p>
-        Whether it's sales activation, corporate events, seminars, exhibitions, merchandising, we provide creative and innovative solutions to ensure every moment becomes an unforgettable experience and clients goals is our priority.
-      </p> -->
     </div>
     <div class="about-media reveal">
         <img class="photo-main" src="{{ $profile['data'][0]['acf']['about_image_1']['url'] ?? asset('assets/images/img-about1.png')}}" alt="Dualana planning session">
@@ -217,4 +225,74 @@
   </div>
   <button class="modal-close" id="modalClose" type="button" aria-label="Close">&times;</button>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const services = @json($jsServices);
+    const modal = document.getElementById("modal");
+    const modalImage = document.getElementById("modalImage");
+    const modalIndex = document.getElementById("modalIndex");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const modalClose = document.getElementById("modalClose");
+
+    let lastFocused = null;
+
+    function openModal(i) {
+        const data = services[i];
+        if (!data || !modal || !modalImage || !modalIndex || !modalTitle || !modalBody || !modalClose) return;
+        modalImage.src = data.image;
+        modalImage.alt = data.title;
+        modalIndex.textContent = data.index;
+        modalTitle.textContent = data.title;
+        modalBody.textContent = data.body;
+
+        lastFocused = document.activeElement;
+        document.body.classList.add("modal-open");
+        modal.classList.add("is-open");
+        modalClose.focus();
+    }
+
+    function closeModal() {
+        if (!modal) return;
+        modal.classList.remove("is-open");
+        document.body.classList.remove("modal-open");
+        if (lastFocused) lastFocused.focus();
+    }
+
+    document.querySelectorAll("[data-open]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openModal(Number(btn.dataset.open));
+        });
+    });
+
+    // Clicking the card itself (outside the button) also opens its modal
+    document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("click", () =>
+            openModal(Number(card.dataset.service)),
+        );
+        card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openModal(Number(card.dataset.service));
+            }
+        });
+    });
+
+    if (modal && modalClose) {
+        modalClose.addEventListener("click", closeModal);
+        const backdrop = modal.querySelector(".modal-backdrop");
+        if (backdrop) {
+            backdrop.addEventListener("click", closeModal);
+        }
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal && modal.classList.contains("is-open")) {
+            closeModal();
+        }
+    });
+});
+</script>
 @endsection
