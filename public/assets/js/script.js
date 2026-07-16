@@ -3,10 +3,29 @@ const toggle = document.querySelector("[data-menu-toggle]");
 const nav = document.querySelector("[data-nav]");
 const revealItems = document.querySelectorAll(".reveal");
 
+let lastScrollY = window.scrollY;
+
 function updateHeader() {
-    if (header) {
-        header.classList.toggle("is-scrolled", window.scrollY > 30);
+    if (!header) return;
+    const currentScroll = window.scrollY;
+    // background putih setelah scroll
+    header.classList.toggle("is-scrolled", currentScroll > 30);
+
+    // jangan hide saat di paling atas
+    if (currentScroll <= 30) {
+        header.classList.remove("is-hidden");
     }
+
+    // scroll ke bawah
+    else if (currentScroll > lastScrollY) {
+        header.classList.add("is-hidden");
+    }
+
+    // scroll ke atas
+    else {
+        header.classList.remove("is-hidden");
+    }
+    lastScrollY = currentScroll;
 }
 
 if (toggle && nav) {
@@ -35,11 +54,268 @@ const observer = new IntersectionObserver(
     { threshold: 0.18 },
 );
 
+// ini untuk fullscreen modal
 
+const modal = document.getElementById("modal");
+let serviceGallery = [];
+let serviceIndex = 0;
+let serviceInterval = null;
+const modalImage = document.getElementById("modalImage");
+const modalIndex = document.getElementById("modalIndex");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+const modalClose = document.getElementById("modalClose");
+
+let lastFocused = null;
+
+function changeServiceImage() {
+    if (!modalImage) return;
+    modalImage.classList.add("fade");
+
+    setTimeout(() => {
+        serviceIndex++;
+
+        if (serviceIndex >= serviceGallery.length) {
+            serviceIndex = 0;
+        }
+        modalImage.src = serviceGallery[serviceIndex];
+        modalImage.classList.remove("fade");
+    }, 600);
+}
+
+function openModal(card) {
+    if (!card || !modal || !modalImage || !modalIndex || !modalTitle || !modalBody) return;
+    serviceGallery = JSON.parse(card.dataset.gallery || "[]");
+
+    serviceIndex = 0;
+
+    modalImage.src = serviceGallery[0] || "";
+    modalImage.alt = card.dataset.title || "";
+
+    modalIndex.textContent = card.dataset.index || "";
+    modalTitle.textContent = card.dataset.title || "";
+    modalBody.textContent = card.dataset.body || "";
+
+    clearInterval(serviceInterval);
+
+    if (serviceGallery.length > 1) {
+        serviceInterval = setInterval(changeServiceImage, 3000);
+    }
+
+    modal.classList.add("is-open");
+    document.body.classList.add("modal-open");
+}
+
+function closeModal() {
+    clearInterval(serviceInterval);
+
+    if (modal) {
+        modal.classList.remove("is-open");
+    }
+    document.body.classList.remove("modal-open");
+    if (lastFocused) lastFocused.focus();
+}
+
+document.querySelectorAll(".card-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const card = btn.closest(".card");
+        openModal(card);
+    });
+});
+
+document.querySelectorAll(".card").forEach((card) => {
+    card.addEventListener("click", () => openModal(card));
+    card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openModal(card);
+        }
+    });
+});
+
+if (modalClose) {
+    modalClose.addEventListener("click", closeModal);
+}
+if (modal) {
+    const backdrop = modal.querySelector(".modal-backdrop");
+    if (backdrop) {
+        backdrop.addEventListener("click", closeModal);
+    }
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal && modal.classList.contains("is-open")) {
+        closeModal();
+    }
+});
 
 revealItems.forEach((item) => observer.observe(item));
-
 if (header) {
     window.addEventListener("scroll", updateHeader, { passive: true });
     updateHeader();
+}
+
+const lightbox = document.getElementById("lightbox");
+const galleryImage = document.getElementById("galleryImage");
+const galleryTitle = document.getElementById("galleryTitle");
+const galleryDescription = document.getElementById("galleryDescription");
+const galleryCounter = document.getElementById("galleryCounter");
+
+const galleryPrev = document.getElementById("galleryPrev");
+const galleryNext = document.getElementById("galleryNext");
+const galleryClose = document.getElementById("galleryClose");
+
+let galleryImages = [];
+let galleryIndex = 0;
+
+function renderGallery() {
+    if (!galleryImages.length || !galleryImage || !galleryTitle || !galleryCounter) return;
+
+    galleryImage.src = galleryImages[galleryIndex];
+    galleryImage.alt = galleryTitle.textContent;
+
+    galleryCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+}
+
+function openGallery(project) {
+    if (!project || !lightbox || !galleryTitle || !galleryDescription) return;
+
+    const gallery = project.dataset.gallery;
+
+    if (!gallery) {
+        console.warn("Project belum memiliki data-gallery");
+        return;
+    }
+
+    galleryImages = JSON.parse(gallery);
+
+    galleryIndex = 0;
+
+    galleryTitle.textContent = project.dataset.title || "";
+
+    galleryDescription.textContent = project.dataset.description || "";
+
+    renderGallery();
+
+    lightbox.classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function closeGallery() {
+    if (lightbox) {
+        lightbox.classList.remove("active");
+    }
+
+    document.body.style.overflow = "";
+}
+
+document.querySelectorAll(".project-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const project = btn.closest(".project-tile");
+
+        openGallery(project);
+    });
+});
+
+if (galleryPrev) {
+    galleryPrev.addEventListener("click", () => {
+        if (!galleryImages.length) return;
+
+        galleryIndex =
+            (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+
+        renderGallery();
+    });
+}
+
+if (galleryNext) {
+    galleryNext.addEventListener("click", () => {
+        if (!galleryImages.length) return;
+
+        galleryIndex = (galleryIndex + 1) % galleryImages.length;
+
+        renderGallery();
+    });
+}
+
+if (galleryClose) {
+    galleryClose.addEventListener("click", closeGallery);
+}
+
+if (lightbox) {
+    lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) {
+            closeGallery();
+        }
+    });
+}
+
+document.addEventListener("keydown", (e) => {
+    if (!lightbox || !lightbox.classList.contains("active")) return;
+
+    switch (e.key) {
+        case "Escape":
+            closeGallery();
+            break;
+
+        case "ArrowLeft":
+            galleryIndex =
+                (galleryIndex - 1 + galleryImages.length) %
+                galleryImages.length;
+
+            renderGallery();
+
+            break;
+
+        case "ArrowRight":
+            galleryIndex = (galleryIndex + 1) % galleryImages.length;
+
+            renderGallery();
+
+            break;
+    }
+});
+
+const popup = document.getElementById("mapPopup");
+const popupCity = document.getElementById("popupCity");
+const popupRegion = document.getElementById("popupRegion");
+
+if (popup && popupCity && popupRegion) {
+    document.querySelectorAll("map area").forEach((area) => {
+        area.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            popupCity.textContent = area.dataset.city;
+            popupRegion.textContent = area.dataset.region;
+
+            const coords = area.coords.split(",");
+
+            popup.style.left = coords[0] + "px";
+            popup.style.top = coords[1] + "px";
+
+            popup.classList.add("active");
+        });
+    });
+
+    document.querySelectorAll("map area").forEach((area) => {
+        area.addEventListener("mouseenter", (e) => {
+            popupCity.textContent = area.dataset.city;
+            popupRegion.textContent = area.dataset.region;
+
+            const coords = area.coords.split(",");
+
+            popup.style.left = coords[0] + "px";
+            popup.style.top = coords[1] + "px";
+
+            popup.classList.add("active");
+        });
+
+        area.addEventListener("mouseleave", () => {
+            popup.classList.remove("active");
+        });
+    });
 }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Application\UseCases\GetExternalPages;
 use App\Application\UseCases\GetExternalClient;
-use App\Application\UseCases\GetExternalServices;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Exception;
@@ -13,8 +12,7 @@ class HomepageController extends Controller
 {
     public function __construct(
         private readonly GetExternalPages $useCase,
-        private readonly GetExternalClient $useCaseClients,
-        private readonly GetExternalServices $useCaseServices
+        private readonly GetExternalClient $useCaseClient,
     ) {}
 
     /**
@@ -30,12 +28,14 @@ class HomepageController extends Controller
         $clients = null;
         $services = null;
         $error = null;
+        $project = null;
 
         try {
             $banner = $this->useCase->execute(['slug' => 'banner']);
             $profile = $this->useCase->execute(['slug' => 'dualana-profile']);
-            $clients = $this->useCaseClients->execute();
-            $services = $this->useCaseServices->execute(['_embed' => true]);
+            $clients = $this->useCaseClient->execute();
+            $services = $this->useCase->execute(['slug' => 'services']);
+            $projects = $this->useCase->execute(['slug' => 'projects']);
         } catch (Exception $e) {
             $error = $e->getMessage();
         }
@@ -46,6 +46,7 @@ class HomepageController extends Controller
             'profile' => $profile,
             'clients' => $clients,
             'services' => $services,
+            'projects' => $projects,
             'error' => $error
         ]);
     }
