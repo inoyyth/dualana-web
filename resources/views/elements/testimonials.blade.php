@@ -1,4 +1,4 @@
-<section class="testimonials section-wrap">
+<section class="testimonials section-wrap" id="testimonials">
   <div class="section-heading left reveal">
     <h2>{{ $testimonials['data'][0]['title'] }}</h2>
     {!! $testimonials['data'][0]['content'] !!}

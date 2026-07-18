@@ -9,7 +9,7 @@
       {!! $contactUs['data'][0]['content'] !!}
     </div>
     <a class="support-button" href="mailto:{{ $contactUs['data'][0]['acf']['contact_email'] ?? 'hello@dualana.id' }}">
-      {{ $contactUs['data'][0]['acf']['contact_cta_label'] ?? 'Contact Our Support' }} <span aria-hidden="true">◔</span>
+      {{ $contactUs['data'][0]['acf']['contact_cta_label'] ?? 'Contact Our Support' }} <span><i class="fa-brands fa-whatsapp"></i></span>
     </a>
   </div>
 </section>
