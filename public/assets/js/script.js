@@ -6,7 +6,6 @@ const revealItems = document.querySelectorAll(".reveal");
 let lastScrollY = window.scrollY;
 
 function updateHeader() {
-    if (!header) return;
     const currentScroll = window.scrollY;
     // background putih setelah scroll
     header.classList.toggle("is-scrolled", currentScroll > 30);
@@ -28,19 +27,24 @@ function updateHeader() {
     lastScrollY = currentScroll;
 }
 
-if (toggle && nav) {
-    toggle.addEventListener("click", () => {
-        const isOpen = nav.classList.toggle("is-open");
-        toggle.setAttribute("aria-expanded", String(isOpen));
-    });
+toggle.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("is-open");
 
-    nav.addEventListener("click", (event) => {
-        if (event.target.matches("a")) {
-            nav.classList.remove("is-open");
-            toggle.setAttribute("aria-expanded", "false");
-        }
-    });
-}
+    toggle.classList.toggle("is-active", isOpen);
+
+    toggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+nav.addEventListener("click", (event) => {
+    if (event.target.matches("a")) {
+        nav.classList.remove("is-open");
+
+        // Mengembalikan icon menjadi hamburger
+        toggle.classList.remove("is-active");
+
+        toggle.setAttribute("aria-expanded", "false");
+    }
+});
 
 const observer = new IntersectionObserver(
     (entries) => {
@@ -69,7 +73,6 @@ const modalClose = document.getElementById("modalClose");
 let lastFocused = null;
 
 function changeServiceImage() {
-    if (!modalImage) return;
     modalImage.classList.add("fade");
 
     setTimeout(() => {
@@ -84,17 +87,16 @@ function changeServiceImage() {
 }
 
 function openModal(card) {
-    if (!card || !modal || !modalImage || !modalIndex || !modalTitle || !modalBody) return;
-    serviceGallery = JSON.parse(card.dataset.gallery || "[]");
+    serviceGallery = JSON.parse(card.dataset.gallery);
 
     serviceIndex = 0;
 
-    modalImage.src = serviceGallery[0] || "";
-    modalImage.alt = card.dataset.title || "";
+    modalImage.src = serviceGallery[0];
+    modalImage.alt = card.dataset.title;
 
-    modalIndex.textContent = card.dataset.index || "";
-    modalTitle.textContent = card.dataset.title || "";
-    modalBody.textContent = card.dataset.body || "";
+    modalIndex.textContent = card.dataset.index;
+    modalTitle.textContent = card.dataset.title;
+    modalBody.textContent = card.dataset.body;
 
     clearInterval(serviceInterval);
 
@@ -109,9 +111,7 @@ function openModal(card) {
 function closeModal() {
     clearInterval(serviceInterval);
 
-    if (modal) {
-        modal.classList.remove("is-open");
-    }
+    modal.classList.remove("is-open");
     document.body.classList.remove("modal-open");
     if (lastFocused) lastFocused.focus();
 }
@@ -134,27 +134,18 @@ document.querySelectorAll(".card").forEach((card) => {
     });
 });
 
-if (modalClose) {
-    modalClose.addEventListener("click", closeModal);
-}
-if (modal) {
-    const backdrop = modal.querySelector(".modal-backdrop");
-    if (backdrop) {
-        backdrop.addEventListener("click", closeModal);
-    }
-}
+modalClose.addEventListener("click", closeModal);
+modal.querySelector(".modal-backdrop").addEventListener("click", closeModal);
 
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal && modal.classList.contains("is-open")) {
+    if (e.key === "Escape" && modal.classList.contains("is-open")) {
         closeModal();
     }
 });
 
 revealItems.forEach((item) => observer.observe(item));
-if (header) {
-    window.addEventListener("scroll", updateHeader, { passive: true });
-    updateHeader();
-}
+window.addEventListener("scroll", updateHeader, { passive: true });
+updateHeader();
 
 const lightbox = document.getElementById("lightbox");
 const galleryImage = document.getElementById("galleryImage");
@@ -167,19 +158,22 @@ const galleryNext = document.getElementById("galleryNext");
 const galleryClose = document.getElementById("galleryClose");
 
 let galleryImages = [];
+let galleryDescriptions = [];
 let galleryIndex = 0;
 
 function renderGallery() {
-    if (!galleryImages.length || !galleryImage || !galleryTitle || !galleryCounter) return;
+    if (!galleryImages.length) return;
 
     galleryImage.src = galleryImages[galleryIndex];
     galleryImage.alt = galleryTitle.textContent;
 
     galleryCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+
+    galleryDescription.innerHTML = galleryDescriptions[galleryIndex] || "";
 }
 
 function openGallery(project) {
-    if (!project || !lightbox || !galleryTitle || !galleryDescription) return;
+    if (!project) return;
 
     const gallery = project.dataset.gallery;
 
@@ -190,11 +184,19 @@ function openGallery(project) {
 
     galleryImages = JSON.parse(gallery);
 
+    try {
+        const desc = project.dataset.description;
+        galleryDescriptions = JSON.parse(desc || "[]");
+        if (!Array.isArray(galleryDescriptions)) {
+            galleryDescriptions = [desc || ""];
+        }
+    } catch (e) {
+        galleryDescriptions = [project.dataset.description || ""];
+    }
+
     galleryIndex = 0;
 
     galleryTitle.textContent = project.dataset.title || "";
-
-    galleryDescription.textContent = project.dataset.description || "";
 
     renderGallery();
 
@@ -203,9 +205,7 @@ function openGallery(project) {
 }
 
 function closeGallery() {
-    if (lightbox) {
-        lightbox.classList.remove("active");
-    }
+    lightbox.classList.remove("active");
 
     document.body.style.overflow = "";
 }
@@ -221,41 +221,33 @@ document.querySelectorAll(".project-btn").forEach((btn) => {
     });
 });
 
-if (galleryPrev) {
-    galleryPrev.addEventListener("click", () => {
-        if (!galleryImages.length) return;
+galleryPrev.addEventListener("click", () => {
+    if (!galleryImages.length) return;
 
-        galleryIndex =
-            (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+    galleryIndex =
+        (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
 
-        renderGallery();
-    });
-}
+    renderGallery();
+});
 
-if (galleryNext) {
-    galleryNext.addEventListener("click", () => {
-        if (!galleryImages.length) return;
+galleryNext.addEventListener("click", () => {
+    if (!galleryImages.length) return;
 
-        galleryIndex = (galleryIndex + 1) % galleryImages.length;
+    galleryIndex = (galleryIndex + 1) % galleryImages.length;
 
-        renderGallery();
-    });
-}
+    renderGallery();
+});
 
-if (galleryClose) {
-    galleryClose.addEventListener("click", closeGallery);
-}
+galleryClose.addEventListener("click", closeGallery);
 
-if (lightbox) {
-    lightbox.addEventListener("click", (e) => {
-        if (e.target === lightbox) {
-            closeGallery();
-        }
-    });
-}
+lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) {
+        closeGallery();
+    }
+});
 
 document.addEventListener("keydown", (e) => {
-    if (!lightbox || !lightbox.classList.contains("active")) return;
+    if (!lightbox.classList.contains("active")) return;
 
     switch (e.key) {
         case "Escape":
@@ -284,38 +276,54 @@ const popup = document.getElementById("mapPopup");
 const popupCity = document.getElementById("popupCity");
 const popupRegion = document.getElementById("popupRegion");
 
-if (popup && popupCity && popupRegion) {
-    document.querySelectorAll("map area").forEach((area) => {
-        area.addEventListener("click", (e) => {
-            e.preventDefault();
+document.querySelectorAll("map area").forEach((area) => {
+    area.addEventListener("click", (e) => {
+        e.preventDefault();
 
-            popupCity.textContent = area.dataset.city;
-            popupRegion.textContent = area.dataset.region;
+        popupCity.textContent = area.dataset.city;
+        popupRegion.textContent = area.dataset.region;
 
-            const coords = area.coords.split(",");
+        const coords = area.coords.split(",");
 
-            popup.style.left = coords[0] + "px";
-            popup.style.top = coords[1] + "px";
+        popup.style.left = coords[0] + "px";
+        popup.style.top = coords[1] + "px";
 
-            popup.classList.add("active");
-        });
+        popup.classList.add("active");
+    });
+});
+
+document.querySelectorAll("map area").forEach((area) => {
+    area.addEventListener("mouseenter", (e) => {
+        popupCity.textContent = area.dataset.city;
+        popupRegion.textContent = area.dataset.region;
+
+        const coords = area.coords.split(",");
+
+        popup.style.left = coords[0] + "px";
+        popup.style.top = coords[1] + "px";
+
+        popup.classList.add("active");
     });
 
-    document.querySelectorAll("map area").forEach((area) => {
-        area.addEventListener("mouseenter", (e) => {
-            popupCity.textContent = area.dataset.city;
-            popupRegion.textContent = area.dataset.region;
+    area.addEventListener("mouseleave", () => {
+        popup.classList.remove("active");
+    });
+});
 
-            const coords = area.coords.split(",");
+if (window.matchMedia("(max-width:768px)").matches) {
+    const cards = document.querySelectorAll(".project-tile");
 
-            popup.style.left = coords[0] + "px";
-            popup.style.top = coords[1] + "px";
+    cards.forEach((card) => {
+        card.addEventListener("click", function (e) {
+            if (e.target.closest(".project-btn")) return;
 
-            popup.classList.add("active");
-        });
+            cards.forEach((item) => {
+                if (item !== card) {
+                    item.classList.remove("active");
+                }
+            });
 
-        area.addEventListener("mouseleave", () => {
-            popup.classList.remove("active");
+            card.classList.toggle("active");
         });
     });
 }
