@@ -29,6 +29,7 @@ class HomepageController extends Controller
         $services = null;
         $error = null;
         $project = null;
+        $testimonials = null;
 
         try {
             $banner = $this->useCase->execute(['slug' => 'banner']);
@@ -36,6 +37,7 @@ class HomepageController extends Controller
             $clients = $this->useCaseClient->execute();
             $services = $this->useCase->execute(['slug' => 'services']);
             $projects = $this->useCase->execute(['slug' => 'projects']);
+            $testimonials = $this->useCase->execute(['slug' => 'testimonial']);
         } catch (Exception $e) {
             $error = $e->getMessage();
         }
@@ -47,6 +49,7 @@ class HomepageController extends Controller
             'clients' => $clients,
             'services' => $services,
             'projects' => $projects,
+            'testimonials' => $testimonials,
             'error' => $error
         ]);
     }
