@@ -1,76 +1,33 @@
 <section class="scope fullscreen-section" id="scope">
         <div class="section-wrap scope-inner">
           <div class="scope-heading reveal">
-            <h2>Scope</h2>
-            <p>We have a professional team and partner network across all regions of Indonesia.</p>
+            <h2>{{ $scope['data'][0]['title'] }}</h2>
+            {!! $scope['data'][0]['content'] !!}
           </div>
+          @php
+            $scopeRegionGroup = $scope['data'][0]['acf']['scope_region_group'];
+            $scopeLocations = $scope['data'][0]['acf']['scope_locations'];
+          @endphp
           <div class="metrics reveal" aria-label="Coverage metrics">
-            <strong><span>20</span> Provinces</strong>
-            <strong><span>100</span> Cities</strong>
-            <strong><span>500</span> District</strong>
+            <strong><span>{{ $scopeRegionGroup['scope_region_group_provinces'] }}</span> Provinces</strong>
+            <strong><span>{{ $scopeRegionGroup['scope_region_group_cities'] }}</span> Cities</strong>
+            <strong><span>{{ $scopeRegionGroup['scope_region_group_districts'] }}</span> District</strong>
           </div>
           
           <div class="scope-map">
-            <span class="pin pin-medan"></span>
-            <span class="pin pin-jakarta"></span>
-            <span class="pin pin-balikpapan"></span>
-            <span class="pin pin-makasar"></span>
-            <span class="pin pin-surabaya"></span>
-            <span class="pin pin-denpasar"></span>
-            <span class="pin pin-jayapura"></span>
-
-            <img src="{{ asset('assets/images/aset-peta.png') }}" alt="Indonesia Map" usemap="#indonesia-map" class="indonesia-map">
-
-            <map name="indonesia-map">
-              <area shape="circle"
-                coords="89,53,10"
-                href="#"
-                alt="Medan"
-                data-city="Medan"
-                data-region="Sumatera Utara">
-              <area shape="circle"
-                coords="308,316,10"
-                href="#"
-                alt="Jakarta"
-                data-city="Jakarta"
-                data-region="DKI Jakarta">
-              <area shape="circle"
-                coords="476,356,10"
-                href="#"
-                alt="Surabaya"
-                data-city="Surabaya"
-                data-region="Jawa Timur">
-              <area shape="circle"
-                coords="569,188,10"
-                href="#"
-                alt="Balikpapan"
-                data-city="Balikpapan"
-                data-region="Kalimantan Timur">
-              <area shape="circle"
-                coords="652,286,10"
-                href="#"
-                alt="Makassar"
-                data-city="Makassar"
-                data-region="Sulawesi Selatan">
-              <area shape="circle"
-                coords="529,373,10"
-                href="#"
-                alt="Denpasar"
-                data-city="Denpasar"
-                data-region="Bali">
-              <area shape="circle"
-                coords="1198,218,10"
-                href="#"
-                alt="Jayapura"
-                data-city="Jayapura"
-                data-region="Papua">
-            </map>
-
-            <div id="mapPopup" class="map-popup">
-              <h4 id="popupCity"></h4>
-              <p id="popupRegion"></p>
+            @foreach($scopeLocations as $location)
+            <div>
+              <div class="pin-point" 
+                  style="left: {{ $location['scope_locations_coordinate']['scope_locations_x'] }}%;
+                        top: {{ $location['scope_locations_coordinate']['scope_locations_y'] }}%">
+                <span class="popover">
+                  <strong>{{ $location['scope_locations_province'] }}</strong>
+                  <small>{{ $location['scope_locations_city'] }}</small>
+                </span>
+              </div>
             </div>
-
+            @endforeach
+            <img src="{{ asset('assets/images/aset-peta.png') }}" alt="Indonesia Map" usemap="#indonesia-map" class="indonesia-map">
           </div>
         </div>
       </section>

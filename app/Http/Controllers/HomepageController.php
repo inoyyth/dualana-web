@@ -30,6 +30,7 @@ class HomepageController extends Controller
         $error = null;
         $project = null;
         $testimonials = null;
+        $scope = null;
 
         try {
             $banner = $this->useCase->execute(['slug' => 'banner']);
@@ -38,6 +39,7 @@ class HomepageController extends Controller
             $services = $this->useCase->execute(['slug' => 'services']);
             $projects = $this->useCase->execute(['slug' => 'projects']);
             $testimonials = $this->useCase->execute(['slug' => 'testimonial']);
+            $scope = $this->useCase->execute(['slug' => 'scope']);
         } catch (Exception $e) {
             $error = $e->getMessage();
         }
@@ -50,6 +52,7 @@ class HomepageController extends Controller
             'services' => $services,
             'projects' => $projects,
             'testimonials' => $testimonials,
+            'scope' => $scope,
             'error' => $error
         ]);
     }

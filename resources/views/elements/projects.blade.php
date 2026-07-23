@@ -12,8 +12,15 @@
         $gallery_description = array_map(function($desc) {
           return $desc['project_list_gallery_caption'];
         }, $project['project_list_gallery']);
+        $typeCard = [
+          'main',
+          'wide',
+          'left',
+          'middle',
+          'right',
+        ];
       @endphp
-    <article class="project-tile project-{{ $key + 1 }} reveal"
+    <article class="project-tile project-{{ $typeCard[$key] }} project-item reveal"
       data-title="{{ $project['project_list_title'] }}" 
       data-description="{{ json_encode($gallery_description) }}"
       data-gallery='{{ json_encode($gallery_data) }}'>

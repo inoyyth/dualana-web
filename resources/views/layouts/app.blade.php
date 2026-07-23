@@ -19,7 +19,7 @@
     </main>
 
     <x-footer>
-        @yield('footer', '© ' . date('Y') . ' Dualana Web')
+        @yield('footer')
     </x-footer>
 
     <!-- Lightbox / Gallery Modal for Projects -->
