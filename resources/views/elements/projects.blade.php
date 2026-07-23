@@ -20,7 +20,7 @@
           'right',
         ];
       @endphp
-    <article class="project-tile project-{{ $typeCard[$key] }} project-item reveal"
+    <article class="project-tile project-{{ count($key) <= 4 ? $typeCard[$key] : 'extra' }} project-item reveal"
       data-title="{{ $project['project_list_title'] }}" 
       data-description="{{ json_encode($gallery_description) }}"
       data-gallery='{{ json_encode($gallery_data) }}'>
