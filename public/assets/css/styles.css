@@ -963,7 +963,7 @@ h2 {
 
 .testimonials {
     padding: 65px 0;
-    min-height: 100vh;
+    /* min-height: 100vh; */
     display: flex;
     flex-direction: column;
     justify-content: center;

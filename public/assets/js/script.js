@@ -158,7 +158,6 @@ const galleryNext = document.getElementById("galleryNext");
 const galleryClose = document.getElementById("galleryClose");
 
 let galleryImages = [];
-let galleryDescriptions = [];
 let galleryIndex = 0;
 
 function renderGallery() {
@@ -168,8 +167,6 @@ function renderGallery() {
     galleryImage.alt = galleryTitle.textContent;
 
     galleryCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
-
-    galleryDescription.innerHTML = galleryDescriptions[galleryIndex] || "";
 }
 
 function openGallery(project) {
@@ -184,19 +181,11 @@ function openGallery(project) {
 
     galleryImages = JSON.parse(gallery);
 
-    try {
-        const desc = project.dataset.description;
-        galleryDescriptions = JSON.parse(desc || "[]");
-        if (!Array.isArray(galleryDescriptions)) {
-            galleryDescriptions = [desc || ""];
-        }
-    } catch (e) {
-        galleryDescriptions = [project.dataset.description || ""];
-    }
-
     galleryIndex = 0;
 
     galleryTitle.textContent = project.dataset.title || "";
+
+    galleryDescription.textContent = project.dataset.description || "";
 
     renderGallery();
 
@@ -309,6 +298,26 @@ document.querySelectorAll("map area").forEach((area) => {
         popup.classList.remove("active");
     });
 });
+
+const toggleProjectsBtn = document.getElementById("toggleProjects");
+
+if (toggleProjectsBtn) {
+    const extraProjects = document.querySelectorAll(".project-extra");
+
+    let expanded = false;
+
+    toggleProjectsBtn.addEventListener("click", () => {
+        expanded = !expanded;
+
+        extraProjects.forEach((project) => {
+            project.classList.toggle("show", expanded);
+        });
+
+        toggleProjectsBtn.textContent = expanded
+            ? "Hide projects"
+            : "Show more projects";
+    });
+}
 
 if (window.matchMedia("(max-width:768px)").matches) {
     const cards = document.querySelectorAll(".project-tile");

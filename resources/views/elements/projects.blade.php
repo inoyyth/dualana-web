@@ -1,39 +1,51 @@
+@if($projects && isset($projects['data'][0]))
  <section class="projects section-wrap" id="projects">
-  <div class="section-heading left reveal">
-    <h2>{{ $projects['data'][0]['title'] }}</h2>
-    {!! $projects['data'][0]['content'] !!}
-  </div>
-  <div class="project-grid">
-    @foreach($projects['data'][0]['acf']['project_list'] as $key => $project)
-      @php
-        $gallery_data = array_map(function($image) {
-          return $image['project_list_gallery_image']['url'];
-        }, $project['project_list_gallery']);
-        $gallery_description = array_map(function($desc) {
-          return $desc['project_list_gallery_caption'];
-        }, $project['project_list_gallery']);
-        $typeCard = [
-          'main',
-          'wide',
-          'left',
-          'middle',
-          'right',
-        ];
-      @endphp
-    <article class="project-tile project-{{ $key <= 4 ? $typeCard[$key] : 'extra' }} project-item reveal"
-      data-title="{{ $project['project_list_title'] }}" 
-      data-description="{{ json_encode($gallery_description) }}"
-      data-gallery='{{ json_encode($gallery_data) }}'>
-      <img src="{{ $gallery_data[0] }}" alt="{{ $project['project_list_title'] }}">
-      <div class="project-overlay">
-        <h3>{{ $project['project_list_title'] }}</h3>
-        <p>{{ $project['project_list_gallery_deskripsi'] }}</p>
-        <button class="project-btn" type="button"> View Project</button>
-      </div>
-    </article>
-    @endforeach
-  </div>
-</section>
+   <div class="section-heading left reveal">
+     <h2>{{ $projects['data'][0]['title'] }}</h2>
+     {!! $projects['data'][0]['content'] !!}
+   </div>
+   <div class="project-grid">
+    @if(isset($projects['data'][0]['acf']['project_list']))
+     @foreach($projects['data'][0]['acf']['project_list'] as $key => $project)
+       @php
+        $project_gallery = $project['project_list_gallery'] ?? [];
+         $gallery_data = array_map(function($image) {
+           return $image['project_list_gallery_image']['url'] ?? '';
+         }, $project_gallery);
+         $gallery_description = array_map(function($desc) {
+           return $desc['project_list_gallery_caption'] ?? '';
+         }, $project_gallery);
+         $typeCard = [
+           'main',
+           'wide',
+           'left',
+           'middle',
+           'right',
+         ];
+       @endphp
+     <article class="project-tile project-{{ $key <= 4 ? $typeCard[$key] : 'extra project-standard' }} project-item reveal"
+       data-title="{{ $project['project_list_title'] ?? '' }}" 
+       data-description="{{ json_encode($gallery_description) }}"
+       data-gallery='{{ json_encode($gallery_data) }}'>
+      @if(isset($gallery_data[0]))
+       <img src="{{ $gallery_data[0] }}" alt="{{ $project['project_list_title'] ?? '' }}">
+      @endif
+       <div class="project-overlay">
+         <h3>{{ $project['project_list_title'] ?? '' }}</h3>
+         <p>{{ $project['project_list_gallery_deskripsi'] ?? '' }}</p>
+         <button class="project-btn" type="button"> View Project</button>
+       </div>
+     </article>
+     @endforeach
+    @endif
+   </div>
+  @if(isset($projects['data'][0]['acf']['project_list']) && count($projects['data'][0]['acf']['project_list']) > 5)
+     <div class="project-action">
+       <button id="toggleProjects" class="button primary">Show more projects</button>
+     </div>
+   @endif
+ </section>
+@endif
 
 <!-- Fullscreen Modal for Projects -->
 <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Project Gallery">

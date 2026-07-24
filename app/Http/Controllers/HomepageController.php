@@ -28,7 +28,7 @@ class HomepageController extends Controller
         $clients = null;
         $services = null;
         $error = null;
-        $project = null;
+        $projects = null;
         $testimonials = null;
         $scope = null;
 

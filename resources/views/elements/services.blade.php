@@ -1,3 +1,4 @@
+@if($services && isset($services['data'][0]))
 <section class="services section-wrap" id="services">
   <div class="section-heading reveal">
     <h2>{{ $services['data'][0]['title'] }}</h2>
@@ -23,6 +24,7 @@
     @endforeach
   </div>
 </section>
+@endif
 
 <!-- Fullscreen Modal for Services -->
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
