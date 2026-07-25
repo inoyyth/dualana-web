@@ -6,6 +6,7 @@
     {{ $slot }}
     <p>Copyright © 2026 Dualana. All Rights Reserved</p>
     <nav aria-label="Footer navigation">
+
         <a href="{{ request()->is('/') ? '#about' : url('/#about') }}">About</a>
         <a href="{{ request()->is('/') ? '#services' : url('/#services') }}">Service</a>
         <a href="{{ request()->is('/') ? '#scope' : url('/#scope') }}">Scope</a>
@@ -15,7 +16,7 @@
     </nav>
     <div class="socials" aria-label="Social links">
         @if(isset($contact['acf']['contact_email']))
-        <a href="{{ $contact['acf']['contact_email'] ?? '#' }}" target="_blank" rel="noopener" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+        <a href="mailto:`{{ $contact['acf']['contact_email'] ?? '#' }}" target="_blank" rel="noopener" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
         @endif
         @if(isset($contact['acf']['contact_whatsapp']))
         <a href="{{ $contact['acf']['contact_whatsapp'] ?? '#' }}" target="_blank" rel="noopener" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
