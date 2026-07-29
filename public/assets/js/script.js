@@ -168,7 +168,7 @@ function renderGallery() {
     galleryImage.alt = galleryTitle.textContent;
 
     galleryCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
-    galleryDescription.textContent = galleryDescriptions[galleryIndex] || "";
+    galleryDescription.innerHTML = galleryDescriptions[galleryIndex] || "";
 }
 
 function openGallery(project) {
