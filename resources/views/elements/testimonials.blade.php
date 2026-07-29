@@ -8,11 +8,16 @@
     @if(isset($testimonials['data'][0]['acf']['testimonial_list']))
       @foreach($testimonials['data'][0]['acf']['testimonial_list'] as $key => $testimonial)
       <article class="quote-card reveal">
-        <span class="avatar" aria-hidden="true">◎</span>
-        <h3>{{ $testimonial['testimonial_list_title'] ?? '' }}</h3>
-        <p>{{ $testimonial['testimonial_list_description'] ?? '' }}</p>
-        <strong>{{ $testimonial['testimonial_list_name'] ?? '' }}</strong>
-        <small>{{ $testimonial['testimonial_list_role'] ?? '' }}</small>
+        <div class="avatar">
+          <img src="{{ $testimonial['testimonial_list_image'] ? $testimonial['testimonial_list_image']['url'] : asset('assets/images/aset-placeholder.png') }}" 
+                alt="{{ $testimonial['testimonial_list_title'] }}" 
+                loading="lazy" 
+                onerror="this.src='{{ asset('assets/images/aset-placeholder.png') }}'">
+        </div>
+        <h3>{{ $testimonial['testimonial_list_title'] }}</h3>
+        <p>{{ $testimonial['testimonial_list_description'] }}</p> 
+        <strong>{{ $testimonial['testimonial_list_name'] }}</strong>
+        <small>{{ $testimonial['testimonial_list_role'] }}</small>
       </article>
       @endforeach
     @endif

@@ -158,6 +158,7 @@ const galleryNext = document.getElementById("galleryNext");
 const galleryClose = document.getElementById("galleryClose");
 
 let galleryImages = [];
+let galleryDescriptions = [];
 let galleryIndex = 0;
 
 function renderGallery() {
@@ -167,6 +168,7 @@ function renderGallery() {
     galleryImage.alt = galleryTitle.textContent;
 
     galleryCounter.textContent = `${galleryIndex + 1} / ${galleryImages.length}`;
+    galleryDescription.textContent = galleryDescriptions[galleryIndex] || "";
 }
 
 function openGallery(project) {
@@ -181,11 +183,19 @@ function openGallery(project) {
 
     galleryImages = JSON.parse(gallery);
 
+    const description = project.dataset.description;
+    try {
+        galleryDescriptions = description ? JSON.parse(description) : [];
+        if (!Array.isArray(galleryDescriptions)) {
+            galleryDescriptions = [galleryDescriptions];
+        }
+    } catch (e) {
+        galleryDescriptions = description ? [description] : [];
+    }
+
     galleryIndex = 0;
 
     galleryTitle.textContent = project.dataset.title || "";
-
-    galleryDescription.textContent = project.dataset.description || "";
 
     renderGallery();
 
@@ -336,3 +346,41 @@ if (window.matchMedia("(max-width:768px)").matches) {
         });
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const carousel = document.querySelector(".partner-carousel");
+    const row = document.querySelector(".partner-row");
+
+    if (!carousel || !row) return;
+
+    const originalItems = [...row.children];
+
+    while (row.scrollWidth < carousel.offsetWidth * 2.5) {
+        originalItems.forEach((item) => {
+            row.appendChild(item.cloneNode(true));
+        });
+    }
+
+    let position = 0;
+    let speed = 0.6;
+    let paused = false;
+
+    function animate() {
+        if (!paused) {
+            position += speed;
+
+            if (position >= row.scrollWidth / 2) {
+                position = 0;
+            }
+
+            row.style.transform = `translateX(${-position}px)`;
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    carousel.addEventListener("mouseenter", () => (paused = true));
+    carousel.addEventListener("mouseleave", () => (paused = false));
+
+    animate();
+});
