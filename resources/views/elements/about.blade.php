@@ -1,5 +1,5 @@
 @if($profile && isset($profile['data'][0]))
-<section class="about section-wrap" id="about" style="background-image: url(../assets/images/bg-people.png);">
+<section class="about section-wrap" id="about">
   <div class="about-copy reveal">
     {!! $profile['data'][0]['content'] !!}
   </div>
