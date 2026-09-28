@@ -59,7 +59,7 @@
         <div class="gallery-counter" id="galleryCounter">1 / 12</div>
       </div>
       <div class="image-frame">
-        <img id="galleryImage" src="" alt="">
+        <img id="galleryImage" style="object-fit: contain;" src="" alt="">
       </div>
       <div class="gallery-info">
         <h2 id="galleryTitle"></h2>
